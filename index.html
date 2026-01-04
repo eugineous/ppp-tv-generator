@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PPP TV News Generator</title>
+      <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+                .container { background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); padding: 40px; max-width: 900px; width: 100%; }
+                h1 { color: #E91E8C; text-align: center; margin-bottom: 10px; font-size: 32px; }
+                .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 14px; }
+                .form-group { margin-bottom: 25px; }
+                label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px; }
+                input[type="text"], input[type="url"], textarea { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; transition: border-color 0.3s; font-family: inherit; }
+                input[type="text"]:focus, input[type="url"]:focus, textarea:focus { outline: none; border-color: #E91E8C; }
+                textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+                input[type="file"] { display: none; }
+                .file-upload-btn { display: inline-block; padding: 12px 24px; background: #667eea; color: white; border-radius: 8px; cursor: pointer; transition: background 0.3s; font-weight: 600; }
+                .file-upload-btn:hover { background: #5568d3; }
+                .file-name { display: inline-block; margin-left: 15px; color: #666; font-size: 14px; }
+                .generate-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #E91E8C 0%, #F68D2E 100%); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: 10px; }
+                .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(233, 30, 140, 0.3); }
+                .generate-btn:active { transform: translateY(0); }
+                .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+                .preview-section { margin-top: 40px; text-align: center; }
+                .preview-section h2 { color: #333; margin-bottom: 20px; font-size: 24px; }
+                #canvas { max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); display: none; }
+                .download-btn { display: none; margin: 20px auto 0; padding: 14px 32px; background: #10B981; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.3s; }
+                .download-btn:hover { background: #059669; }
+                .tips { background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px 20px; margin: 30px 0; border-radius: 8px; }
+                .tips h3 { color: #1e40af; margin-bottom: 10px; font-size: 16px; }
+                .tips ul { margin-left: 20px; color: #1e40af; }
+                .tips li { margin-bottom: 5px; font-size: 14px; }
+                .color-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+                .color-input-group { display: flex; align-items: center; gap: 10px; }
+                input[type="color"] { width: 50px; height: 40px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; }
+                .loading { text-align: center; color: #666; font-style: italic; margin-top: 15px; display: none; }
+                @media (max-width: 768px) { .container { padding: 25px; } h1 { font-size: 24px; } .color-inputs { grid-template-columns: 1fr; } }
+            </style>
+  </head>
+  <body>
+        <div class="container">
+                  <h1>PPP TV News Generator</h1>
+                <p class="subtitle">Automated Entertainment News Graphics - No Canva Needed</p>p>
+                <div class="form-group">
+                            <label for="logoUpload">PPP TV Logo (Upload Once)</label>label>
+                            <label class="file-upload-btn" for="logoUpload">Choose Logo File</label>label>
+                            <input type="file" id="logoUpload" accept="image/*">
+                            <span class="file-name" id="logoFileName">No logo uploaded</span>span>
+                </div>div>
+                <div class="form-group">
+                            <label for="imageUrl">Celebrity/Person Image URL</label>label>
+                            <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg or paste direct image link">
+                            <p style="font-size: 12px; color: #666; margin-top: 5px;">OR upload file: <label class="file-upload-btn" for="imageUpload" style="font-size: 12px; padding: 8px 16px; display: inline-block; margin-left: 10px;">Choose File</label>label>
+                                <input type="file" id="imageUpload" accept="image/*"><span class="file-name" id="imageFileName"></span>span></p>p>
+                </div>div>
+                <div class="form-group">
+                            <label for="headline">Headline Text</label>label>
+                            <textarea id="headline" placeholder="ONE YEAR IN AND ALREADY GLOBAL: HOW MAQ MODELING ACADEMY BEAT THE ODDS" maxlength="200"></textarea>
+                            <p style="font-size: 12px; color: #666; margin-top: 5px;">Keep it punchy (8-15 words ideal). Use ALL CAPS for emphasis.</p>p>
+                </div>div>
+                <div class="form-group">
+                            <label>Brand Colors (Optional)</label>
+                            <div class="color-inputs">
+                                            <div class="color-input-group"><input type="color" id="color1" value="#E91E8C"><span>Pink (Key Words)</span></div>div>
+                                            <div class="color-input-group"><input type="color" id="color2" value="#F68D2E"><span>Orange (Drama Words)</span></div>div>
+                            </div>div>
+                </div>div>
+                <div class="tips">
+                            <h3>Quick Tips:</h3>
+                            <ul>
+                                              <li>Use high-quality images (800x800px minimum)</li>
+                                            <li>Headline should have 8-15 words for best fit</li>
+                                            <li>Logo uploaded once stays saved in browser</li>
+                                            <li>Use **text** for pink or ##text## for orange in headline</li>
+                            </ul>
+                </div>div>
+                <button class="generate-btn" onclick="generateImage()">Generate PPP TV Post</button>button>
+                <p class="loading" id="loading">Generating your post... Please wait.</p>p>
+                <div class="preview-section">
+                            <h2 style="display: none;" id="previewTitle">Preview</h2>
+                            <canvas id="canvas" width="1080" height="1080"></canvas>canvas>
+                            <button class="download-btn" id="downloadBtn" onclick="downloadImage()">Download Image (1080x1080 PNG)</button>button>
+                </div>div>
+        </div>div>
+      <script>
+                let logoImage = null;
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext('2d');
+                window.onload = function() {
+                              const savedLogo = localStorage.getItem('ppptvLogo');
+                              if (savedLogo) { logoImage = new Image(); logoImage.src = savedLogo; document.getElementById('logoFileName').textContent = 'Logo loaded from storage'; }
+                };
+                document.getElementById('logoUpload').addEventListener('change', function(e) {
+                              const file = e.target.files[0];
+                              if (file) {
+                                                const reader = new FileReader();
+                                                reader.onload = function(event) { logoImage = new Image(); logoImage.src = event.target.result; localStorage.setItem('ppptvLogo', event.target.result); document.getElementById('logoFileName').textContent = file.name; };
+                                                reader.readAsDataURL(file);
+                              }
+                });
+                document.getElementById('imageUpload').addEventListener('change', function(e) {
+                              const file = e.target.files[0];
+                              if (file) {
+                                                const reader = new FileReader();
+                                                reader.onload = function(event) { document.getElementById('imageUrl').value = event.target.result; document.getElementById('imageFileName').textContent = file.name; };
+                                                reader.readAsDataURL(file);
+                              }
+                });
+                async function generateImage() {
+                              const imageUrl = document.getElementById('imageUrl').value;
+                              const headline = document.getElementById('headline').value;
+                              const color1 = document.getElementById('color1').value;
+                              const color2 = document.getElementById('color2').value;
+                              if (!logoImage) { alert('Please upload PPP TV logo first!'); return; }
+                              if (!imageUrl) { alert('Please provide celebrity/person image!'); return; }
+                              if (!headline) { alert('Please enter headline text!'); return; }
+                              document.getElementById('loading').style.display = 'block';
+                              document.querySelector('.generate-btn').disabled = true;
+                              try {
+                                                const celebImage = new Image();
+                                                celebImage.crossOrigin = 'anonymous';
+                                                celebImage.onload = function() {
+                                                                      drawPost(celebImage, headline, color1, color2);
+                                                                      document.getElementById('canvas').style.display = 'block';
+                                                                      document.getElementById('previewTitle').style.display = 'block';
+                                                                      document.getElementById('downloadBtn').style.display = 'inline-block';
+                                                                      document.getElementById('loading').style.display = 'none';
+                                                                      document.querySelector('.generate-btn').disabled = false;
+                                                                      document.getElementById('canvas').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                };
+                                                celebImage.onerror = function() { alert('Failed to load image. Try uploading a file instead.'); document.getElementById('loading').style.display = 'none'; document.querySelector('.generate-btn').disabled = false; };
+                                                celebImage.src = imageUrl;
+                              } catch (error) { alert('Error: ' + error.message); document.getElementById('loading').style.display = 'none'; document.querySelector('.generate-btn').disabled = false; }
+                }
+                function drawPost(celebImage, headline, color1, color2) {
+                              ctx.clearRect(0, 0, 1080, 1080);
+                              const scale = Math.max(1080 / celebImage.width, 1080 / celebImage.height);
+                              const x = (1080 / 2) - (celebImage.width / 2) * scale;
+                              const y = (1080 / 2) - (celebImage.height / 2) * scale;
+                              ctx.drawImage(celebImage, x, y, celebImage.width * scale, celebImage.height * scale);
+                              const gradient = ctx.createLinearGradient(0, 0, 0, 1080);
+                              gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+                              gradient.addColorStop(0.3, 'rgba(0, 0, 0, 0.1)');
+                              gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.5)');
+                              gradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.8)');
+                              gradient.addColorStop(1, 'rgba(0, 0, 0, 0.95)');
+                              ctx.fillStyle = gradient;
+                              ctx.fillRect(0, 0, 1080, 1080);
+                              const logoWidth = 200;
+                              const logoHeight = (logoImage.height / logoImage.width) * logoWidth;
+                              ctx.drawImage(logoImage, 40, 40, logoWidth, logoHeight);
+                              ctx.fillStyle = 'white';
+                              ctx.font = 'bold 28px Arial, sans-serif';
+                              ctx.textAlign = 'center';
+                              ctx.fillText('NEWS UPDATE', 540, 520);
+                              ctx.strokeStyle = 'white';
+                              ctx.lineWidth = 3;
+                              ctx.beginPath();
+                              ctx.moveTo(340, 535);
+                              ctx.lineTo(740, 535);
+                              ctx.stroke();
+                              drawHeadline(headline, color1, color2);
+                }
+                function drawHeadline(headline, color1, color2) {
+                              const fontSize = calculateFontSize(headline);
+                              ctx.font = 'bold ' + fontSize + 'px Arial, sans-serif';
+                              ctx.textAlign = 'center';
+                              const lines = wrapText(headline, 900, fontSize);
+                              const startY = 600;
+                              const lineHeight = fontSize + 15;
+                              lines.forEach((line, index) => { const y = startY + (index * lineHeight); drawColoredLine(line, y, color1, color2, fontSize); });
+                }
+                function calculateFontSize(text) {
+                              const length = text.length;
+                              if (length < 50) return 70;
+                              if (length < 80) return 60;
+                              if (length < 120) return 52;
+                              if (length < 150) return 48;
+                              return 42;
+                }
+                function wrapText(text, maxWidth, fontSize) {
+                              ctx.font = 'bold ' + fontSize + 'px Arial, sans-serif';
+                              const words = text.split(' ');
+                              const lines = [];
+                              let currentLine = '';
+                              words.forEach(word => {
+                                                const testLine = currentLine + word + ' ';
+                                                const metrics = ctx.measureText(testLine);
+                                                if (metrics.width > maxWidth && currentLine !== '') { lines.push(currentLine.trim()); currentLine = word + ' '; }
+                                                else { currentLine = testLine; }
+                              });
+                              lines.push(currentLine.trim());
+                              return lines;
+                }
+                function drawColoredLine(line, y, color1, color2, fontSize) {
+                              ctx.font = 'bold ' + fontSize + 'px Arial, sans-serif';
+                              const segments = [];
+                              let buffer = '';
+                              let inMarker = false;
+                              let markerType = '';
+                              for (let i = 0; i < line.length; i++) {
+                                                const char = line[i];
+                                                const nextChar = line[i + 1] || '';
+                                                if (char === '*' && nextChar === '*') {
+                                                                      if (inMarker && markerType === '*') { segments.push({ text: buffer, color: color1 }); buffer = ''; inMarker = false; markerType = ''; i++; }
+                                                                      else if (!inMarker) { if (buffer) { segments.push({ text: buffer, color: 'white' }); buffer = ''; } inMarker = true; markerType = '*'; i++; }
+                                                } else if (char === '#' && nextChar === '#') {
+                                                                      if (inMarker && markerType === '#') { segments.push({ text: buffer, color: color2 }); buffer = ''; inMarker = false; markerType = ''; i++; }
+                                                                      else if (!inMarker) { if (buffer) { segments.push({ text: buffer, color: 'white' }); buffer = ''; } inMarker = true; markerType = '#'; i++; }
+                                                } else { buffer += char; }
+                              }
+                              if (buffer) { segments.push({ text: buffer, color: inMarker ? (markerType === '*' ? color1 : color2) : 'white' }); }
+                              let totalWidth = 0;
+                              segments.forEach(seg => { totalWidth += ctx.measureText(seg.text).width; });
+                              let xPos = (1080 - totalWidth) / 2;
+                              segments.forEach(seg => { ctx.fillStyle = seg.color; ctx.fillText(seg.text, xPos, y); xPos += ctx.measureText(seg.text).width; });
+                }
+                function downloadImage() {
+                              const link = document.createElement('a');
+                              const timestamp = new Date().toISOString().slice(0,10);
+                              link.download = 'PPP_TV_Post_' + timestamp + '.png';
+                              link.href = canvas.toDataURL('image/png');
+                              link.click();
+                }
+      </script>
+  </body>
+</html>html>
+      </script></li></li>
+                            </ul></span></span></label></h1>
+  </body>
+      </style></title>
+  </head>
