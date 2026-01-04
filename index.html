@@ -52,7 +52,7 @@
                 <div class="form-group">
                             <label for="imageUrl">Celebrity/Person Image URL</label>label>
                             <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg or paste direct image link">
-                            <p style="font-size: 12px; color: #666; margin-top: 5px;">OR upload file: <label class="file-upload-btn" for="imageUpload" style="font-size: 12px; padding: 8px 16px; display: inline-block; margin-left: 10px;">Choose File</label>label>
+                            <p style="font-size: 12px; color: #666; margin-top: 5px;">OR upload file: <label class="file-upload-btn" for="imageUpload" style="font-size: 12px; padding: 8px 16px;">Choose File</label>label>
                                 <input type="file" id="imageUpload" accept="image/*"><span class="file-name" id="imageFileName"></span>span></p>p>
                 </div>div>
                 <div class="form-group">
@@ -108,7 +108,7 @@
                                                 reader.readAsDataURL(file);
                               }
                 });
-                async function generateImage() {
+                function generateImage() {
                               const imageUrl = document.getElementById('imageUrl').value;
                               const headline = document.getElementById('headline').value;
                               const color1 = document.getElementById('color1').value;
@@ -118,21 +118,19 @@
                               if (!headline) { alert('Please enter headline text!'); return; }
                               document.getElementById('loading').style.display = 'block';
                               document.querySelector('.generate-btn').disabled = true;
-                              try {
-                                                const celebImage = new Image();
-                                                celebImage.crossOrigin = 'anonymous';
-                                                celebImage.onload = function() {
-                                                                      drawPost(celebImage, headline, color1, color2);
-                                                                      document.getElementById('canvas').style.display = 'block';
-                                                                      document.getElementById('previewTitle').style.display = 'block';
-                                                                      document.getElementById('downloadBtn').style.display = 'inline-block';
-                                                                      document.getElementById('loading').style.display = 'none';
-                                                                      document.querySelector('.generate-btn').disabled = false;
-                                                                      document.getElementById('canvas').scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                                };
-                                                celebImage.onerror = function() { alert('Failed to load image. Try uploading a file instead.'); document.getElementById('loading').style.display = 'none'; document.querySelector('.generate-btn').disabled = false; };
-                                                celebImage.src = imageUrl;
-                              } catch (error) { alert('Error: ' + error.message); document.getElementById('loading').style.display = 'none'; document.querySelector('.generate-btn').disabled = false; }
+                              const celebImage = new Image();
+                              celebImage.crossOrigin = 'anonymous';
+                              celebImage.onload = function() {
+                                                drawPost(celebImage, headline, color1, color2);
+                                                document.getElementById('canvas').style.display = 'block';
+                                                document.getElementById('previewTitle').style.display = 'block';
+                                                document.getElementById('downloadBtn').style.display = 'inline-block';
+                                                document.getElementById('loading').style.display = 'none';
+                                                document.querySelector('.generate-btn').disabled = false;
+                                                document.getElementById('canvas').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                              };
+                              celebImage.onerror = function() { alert('Failed to load image. Try uploading a file instead.'); document.getElementById('loading').style.display = 'none'; document.querySelector('.generate-btn').disabled = false; };
+                              celebImage.src = imageUrl;
                 }
                 function drawPost(celebImage, headline, color1, color2) {
                               ctx.clearRect(0, 0, 1080, 1080);
@@ -170,8 +168,8 @@
                               const lines = wrapText(headline, 900, fontSize);
                               const startY = 600;
                               const lineHeight = fontSize + 15;
-                              lines.forEach((line, index) => { const y = startY + (index * lineHeight); drawColoredLine(line, y, color1, color2, fontSize); });
-                }
+                              lines.forEach(function(line, index) { const y = startY + (index * lineHeight); drawColoredLine(line, y, color1, color2, fontSize); });
+                                }
                 function calculateFontSize(text) {
                               const length = text.length;
                               if (length < 50) return 70;
@@ -185,7 +183,7 @@
                               const words = text.split(' ');
                               const lines = [];
                               let currentLine = '';
-                              words.forEach(word => {
+                              words.forEach(function(word) {
                                                 const testLine = currentLine + word + ' ';
                                                 const metrics = ctx.measureText(testLine);
                                                 if (metrics.width > maxWidth && currentLine !== '') { lines.push(currentLine.trim()); currentLine = word + ' '; }
@@ -213,9 +211,9 @@
                               }
                               if (buffer) { segments.push({ text: buffer, color: inMarker ? (markerType === '*' ? color1 : color2) : 'white' }); }
                               let totalWidth = 0;
-                              segments.forEach(seg => { totalWidth += ctx.measureText(seg.text).width; });
+                              segments.forEach(function(seg) { totalWidth += ctx.measureText(seg.text).width; });
                               let xPos = (1080 - totalWidth) / 2;
-                              segments.forEach(seg => { ctx.fillStyle = seg.color; ctx.fillText(seg.text, xPos, y); xPos += ctx.measureText(seg.text).width; });
+                              segments.forEach(function(seg) { ctx.fillStyle = seg.color; ctx.fillText(seg.text, xPos, y); xPos += ctx.measureText(seg.text).width; });
                 }
                 function downloadImage() {
                               const link = document.createElement('a');
